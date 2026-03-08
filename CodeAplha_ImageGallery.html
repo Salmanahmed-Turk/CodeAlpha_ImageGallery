@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Modern Image Gallery</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial;
+      }
+
+      body {
+        background: #f2f4f8;
+        transition: 0.3s;
+      }
+
+      .dark {
+        background: #121212;
+        color: white;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 40px;
+        background: #222;
+        color: white;
+      }
+
+      header input {
+        padding: 8px 12px;
+        border-radius: 5px;
+        border: none;
+      }
+
+      header button {
+        padding: 8px 14px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .gallery {
+        column-count: 4;
+        column-gap: 15px;
+        padding: 20px;
+        max-width: 1200px;
+        margin: auto;
+      }
+
+      .gallery img {
+        width: 100%;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .gallery img:hover {
+        transform: scale(1.03);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .filters {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .filters button {
+        margin: 5px;
+        padding: 8px 16px;
+        border: none;
+        background: #333;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .lightbox {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .lightbox img {
+        max-width: 70%;
+        border-radius: 10px;
+      }
+
+      .lightbox button {
+        margin: 10px;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .close {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 35px;
+        color: white;
+        cursor: pointer;
+      }
+
+      @media (max-width: 900px) {
+        .gallery {
+          column-count: 2;
+        }
+      }
+
+      @media (max-width: 500px) {
+        .gallery {
+          column-count: 1;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h2>Modern Gallery</h2>
+
+      <input type="text" id="search" placeholder="Search images..." />
+
+      <button onclick="toggleDark()">Dark Mode</button>
+    </header>
+
+    <div class="filters">
+      <button onclick="filter('all')">All</button>
+      <button onclick="filter('nature')">Nature</button>
+      <button onclick="filter('city')">City</button>
+      <button onclick="filter('animals')">Animals</button>
+    </div>
+
+    <div class="gallery" id="gallery">
+      <img src="https://picsum.photos/400/500?1" data-cat="nature" />
+      <img src="https://picsum.photos/400/300?2" data-cat="city" />
+      <img src="https://picsum.photos/400/600?3" data-cat="animals" />
+      <img src="https://picsum.photos/400/350?4" data-cat="nature" />
+      <img src="https://picsum.photos/400/450?5" data-cat="city" />
+      <img src="https://picsum.photos/400/550?6" data-cat="animals" />
+      <img src="https://picsum.photos/400/300?7" data-cat="nature" />
+      <img src="https://picsum.photos/400/500?8" data-cat="city" />
+    </div>
+
+    <div class="lightbox" id="lightbox">
+      <span class="close" onclick="closeLightbox()">×</span>
+
+      <img id="lightboxImg" />
+
+      <div>
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+      </div>
+    </div>
+
+    <script>
+      const images = document.querySelectorAll(".gallery img");
+      const lightbox = document.getElementById("lightbox");
+      const lightboxImg = document.getElementById("lightboxImg");
+
+      let index = 0;
+
+      images.forEach((img, i) => {
+        img.addEventListener("click", () => {
+          index = i;
+          showImage();
+        });
+      });
+
+      function showImage() {
+        lightbox.style.display = "flex";
+        lightboxImg.src = images[index].src;
+      }
+
+      function closeLightbox() {
+        lightbox.style.display = "none";
+      }
+
+      function next() {
+        index++;
+        if (index >= images.length) index = 0;
+        showImage();
+      }
+
+      function prev() {
+        index--;
+        if (index < 0) index = images.length - 1;
+        showImage();
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") next();
+        if (e.key === "ArrowLeft") prev();
+        if (e.key === "Escape") closeLightbox();
+      });
+
+      function toggleDark() {
+        document.body.classList.toggle("dark");
+      }
+
+      function filter(category) {
+        images.forEach((img) => {
+          if (category === "all" || img.dataset.cat === category) {
+            img.style.display = "block";
+          } else {
+            img.style.display = "none";
+          }
+        });
+      }
+
+      document.getElementById("search").addEventListener("keyup", function () {
+        let value = this.value.toLowerCase();
+
+        images.forEach((img) => {
+          let cat = img.dataset.cat;
+          if (cat.includes(value)) {
+            img.style.display = "block";
+          } else {
+            img.style.display = "none";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
